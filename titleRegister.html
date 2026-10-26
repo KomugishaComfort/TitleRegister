@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Title Register</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:wght@500;600&display=swap">
+<style>
+:root{--bg:#eef1ef;--panel:#fbfcfb;--ink:#1c2a31;--mute:#5d6d73;--line:#d3dad7;--acc:#1f6b5a;--acc-ink:#fff;--warn:#a8561a;--soft:#e2ebe7;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12191c;--panel:#192327;--ink:#e3ebe8;--mute:#93a5a9;--line:#2c3a3f;--acc:#59b89f;--acc-ink:#0d1a16;--warn:#e0a06a;--soft:#22322f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12191c;--panel:#192327;--ink:#e3ebe8;--mute:#93a5a9;--line:#2c3a3f;--acc:#59b89f;--acc-ink:#0d1a16;--warn:#e0a06a;--soft:#22322f;color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:20px 16px 60px}
+h1{font:600 30px/1.1 Newsreader,Georgia,serif;margin:0}
+h2{font:600 20px/1.2 Newsreader,Georgia,serif;margin:0}
+header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:12px;margin-bottom:14px}
+header p{margin:4px 0 0;color:var(--mute)}
+nav{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:16px;overflow-x:auto}
+nav button{background:none;border:0;border-bottom:3px solid transparent;padding:9px 14px;font:inherit;color:var(--mute);cursor:pointer;white-space:nowrap}
+nav button[aria-selected=true]{color:var(--ink);border-color:var(--acc);font-weight:600}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--line);background:var(--panel);margin-bottom:16px}
+.stats div{padding:12px 16px;border-right:1px solid var(--line)}
+.stats div:last-child{border-right:0}
+.stats b{display:block;font:600 24px Newsreader,Georgia,serif}
+.stats span{color:var(--mute);font-size:13px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+input,select,textarea,button{font:inherit;color:var(--ink)}
+input,select,textarea{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:7px 9px;min-width:0}
+.bar input{flex:1 1 220px}
+.btn{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:7px 12px;cursor:pointer}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:var(--acc-ink);font-weight:500}
+.btn.del{color:var(--warn)}
+.btn.sm{padding:3px 8px;font-size:13px}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.tw{overflow-x:auto;border:1px solid var(--line);background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:760px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;font-size:13px;color:var(--mute);background:var(--soft)}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+tbody tr.row{cursor:pointer}
+tbody tr.row:hover{background:var(--soft)}
+tr:last-child td{border-bottom:0}
+.tag{display:inline-block;padding:1px 8px;border-radius:10px;background:var(--soft);font-size:13px}
+.tag.done{background:var(--acc);color:var(--acc-ink)}
+.mute{color:var(--mute)}.owe{color:var(--warn);font-weight:500}
+.empty{padding:28px;text-align:center;color:var(--mute)}
+dialog{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px;padding:0;width:min(760px,94vw);max-height:90vh}
+dialog::backdrop{background:rgba(10,20,20,.5)}
+.dh{display:flex;justify-content:space-between;align-items:start;gap:10px;padding:16px 18px;border-bottom:1px solid var(--line)}
+.db{padding:16px 18px;overflow:auto}
+.sec{margin-top:20px}.sec:first-child{margin-top:0}
+.sec h3{margin:0 0 8px;font-size:15px;display:flex;justify-content:space-between;align-items:center}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fg label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mute)}
+.fg label.full{grid-column:1/-1}
+.fg input,.fg select,.fg textarea{color:var(--ink);font-size:15px}
+.acts{display:flex;justify-content:space-between;gap:8px;padding:12px 18px;border-top:1px solid var(--line)}
+.acts div{display:flex;gap:8px}
+.stg{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line)}
+.stg:last-child{border-bottom:0}.stg .nm{flex:1}
+.dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--line);flex:none}
+.dot.on{background:var(--acc);border-color:var(--acc)}
+.money{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+.money div{background:var(--bg);padding:8px 12px}.money b{display:block;font-size:18px}
+.money span{font-size:12px;color:var(--mute)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:4px;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.show{opacity:1}
+@media(max-width:560px){.fg{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="login" hidden style="max-width:420px;padding-top:60px">
+  <h1>Title register</h1><p class="mute">Sign in to open your register.</p>
+  <form id="lf" class="fg" style="grid-template-columns:1fr">
+    <label>Email<input id="em" type="email" required autocomplete="username"></label>
+    <label>Password<input id="pw" type="password" required autocomplete="current-password"></label>
+    <button class="btn pri" type="submit">Sign in</button>
+    <div id="lmsg" class="owe" role="status"></div>
+  </form>
+</div>
+<div class="wrap" id="app" hidden>
+<header>
+  <div><h1>Title register</h1><p>Survey, titling and fee tracking for every property on the books. <span id="status" class="mute"></span></p></div>
+  <div class="bar" style="margin:0">
+    <button class="btn" id="exJson">Backup</button><button class="btn" id="imJson">Restore</button><input type="file" id="fi" accept=".json,.txt,application/json" hidden>
+    <button class="btn" id="exCsv">Export CSV</button>
+    <button class="btn" id="exSql">Export SQL</button>
+    <button class="btn" id="out">Sign out</button>
+  </div>
+</header>
+<div class="stats" id="stats"></div>
+<nav role="tablist" id="tabs"></nav>
+<main id="view"></main>
+</div>
+<dialog id="dlg"></dialog>
+<dialog id="dlg2"></dialog>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const uid=()=>crypto.randomUUID?crypto.randomUUID():"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c=="x"?r:(r&3|8)).toString(16)});
+const fmt=n=>Number(n||0).toLocaleString();
+const now=()=>new Date().toISOString();
+const KEY="title-register-v1";
+const TEMPLATE=[["Instructions received",2],["Field survey",7],["Plotting and computation",5],["Deed plan approval",14],["Title processing",21],["Title issued",0]];
+let db,tab="register",filt={q:"",d:"",s:"",st:""};
+
+function seed(){db={client:[],district:[],surveyor:[],properties:[],stage:[],payment:[]};return db}
+const SUPABASE_URL="https://ysdbjsmgyvkrmapyvvnz.supabase.co";
+const SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzZGJqc21neXZrcm1hcHl2dm56Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5OTg2ODgsImV4cCI6MjEwODU3NDY4OH0.oiy6uZn5NCtTFk4P5n3xqVRvm6K_h5D17skZgd5fIC0";
+let sb=null,snap={},syncing=false,again=false;
+const ORDER=["client","district","surveyor","properties","stage","payment"];
+const PK={client:"client_id",district:"district_id",surveyor:"surveyor_id",properties:"property_id",stage:"stage_id",payment:"payment_id"};
+function setStatus(t){const s=$("#status");if(s)s.textContent=t}
+function takeSnap(){snap={};ORDER.forEach(t=>snap[t]=new Map(db[t].map(r=>[r[PK[t]],JSON.stringify(r)])))}
+async function fetchAll(t){let out=[],i=0;for(;;){const{data,error}=await sb.from(t).select("*").order("created_at").range(i,i+999);if(error)throw error;out=out.concat(data);if(data.length<1000)return out;i+=1000}}
+function save(){sync()}
+async function sync(){
+  if(!sb)return;if(syncing){again=true;return}
+  syncing=true;setStatus("Saving…");
+  try{do{again=false;
+    for(const t of [...ORDER].reverse()){
+      const cur=new Set(db[t].map(r=>r[PK[t]])),gone=[...snap[t].keys()].filter(id=>!cur.has(id));
+      if(gone.length){const{error}=await sb.from(t).delete().in(PK[t],gone);if(error)throw error;gone.forEach(id=>snap[t].delete(id))}
+    }
+    let props=[];
+    for(const t of ORDER){
+      const ch=db[t].filter(r=>snap[t].get(r[PK[t]])!==JSON.stringify(r));if(!ch.length)continue;
+      if(t=="properties"){props=ch;const{error}=await sb.from(t).upsert(ch.map(r=>({...r,current_stage_id:null})));if(error)throw error;continue}
+      const{error}=await sb.from(t).upsert(ch);if(error)throw error;
+      ch.forEach(r=>snap[t].set(r[PK[t]],JSON.stringify(r)));
+    }
+    if(props.length){const{error}=await sb.from("properties").upsert(props);if(error)throw error;props.forEach(r=>snap.properties.set(r.property_id,JSON.stringify(r)))}
+  }while(again);setStatus("All changes saved")}
+  catch(e){setStatus("Couldn’t save: "+(e.message||e)+". Your next change will retry.")}
+  syncing=false;
+}
+async function enter(){
+  $("#login").hidden=true;$("#app").hidden=false;setStatus("Loading…");
+  try{const o={};for(const t of ORDER)o[t]=await fetchAll(t);db=o;takeSnap();render();setStatus("Connected. Changes save automatically.")}
+  catch(e){setStatus("Couldn’t load: "+(e.message||e))}
+}
+async function start(){
+  if(SUPABASE_URL.startsWith("PASTE")||typeof supabase=="undefined"){$("#login").hidden=false;$("#lmsg").textContent="Add your Supabase URL and key at the top of the script, and check your internet connection.";return}
+  sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+  const{data}=await sb.auth.getSession();
+  if(data.session)enter();else $("#login").hidden=false;
+}
+function addProperty(v){
+  const p={property_id:uid(),client_id:v.client_id,land_size:v.land_size??null,payment:0,surveyor_id:v.surveyor_id||null,current_stage_id:null,total_fee:+v.total_fee||0,start_date:v.start_date||null,batch:v.batch||"",location:v.location||"",district_id:v.district_id||null,created_at:now(),updated_at:null};
+  db.properties.push(p);
+  TEMPLATE.forEach(([name,standard_days])=>db.stage.push({stage_id:uid(),property_id:p.property_id,surveyor_id:p.surveyor_id,name,standard_days,created_at:now(),updated_at:null}));
+  p.current_stage_id=db.stage.find(x=>x.property_id==p.property_id).stage_id;
+  return p;
+}
+function addPayment(p,v){
+  const paid=sumPaid(p)+(+v.deposit||0);
+  db.payment.push({payment_id:uid(),total_fee:p.total_fee,deposit:+v.deposit||0,balance:Math.max(0,p.total_fee-paid),payment_to_surveyor:+v.payment_to_surveyor||0,surveyors_balance:+v.surveyors_balance||0,property_id:p.property_id,surveyor_id:p.surveyor_id,note:v.note||"",created_at:now(),updated_at:null});
+  p.payment=paid;
+}
+const sumPaid=p=>db.payment.filter(x=>x.property_id==p.property_id).reduce((a,x)=>a+x.deposit,0);
+const sumSurv=p=>db.payment.filter(x=>x.property_id==p.property_id).reduce((a,x)=>a+x.payment_to_surveyor,0);
+const by=(t,k,id)=>db[t].find(x=>x[k]==id);
+const nameOf=(t,k,id)=>by(t,k,id)?.name||"—";
+function recalc(p){
+  p.payment=sumPaid(p);let run=0;
+  db.payment.filter(x=>x.property_id==p.property_id).sort((a,b)=>a.created_at.localeCompare(b.created_at)).forEach(x=>{x.total_fee=p.total_fee;run+=x.deposit;x.balance=Math.max(0,p.total_fee-run)});
+}
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("show"),1800)}
+
+/* ---------- generic form dialog ---------- */
+function form(title,fields,vals,onSave,onDelete){
+  const d=$("#dlg2");vals=vals||{};
+  d.innerHTML=`<div class="dh"><h2>${esc(title)}</h2><button class="btn sm" data-x>Close</button></div>
+  <div class="db"><div class="fg">${fields.map(f=>{
+    const v=vals[f.k]??"";let inp;
+    if(f.t=="select")inp=`<select name="${f.k}">${f.req?"":'<option value="">None</option>'}${f.o.map(([val,l])=>`<option value="${esc(val)}" ${val==v?"selected":""}>${esc(l)}</option>`).join("")}</select>`;
+    else if(f.t=="textarea")inp=`<textarea name="${f.k}" rows="2">${esc(v)}</textarea>`;
+    else inp=`<input name="${f.k}" type="${f.t||"text"}" value="${esc(v)}" ${f.t=="number"?'min="0" step="0.01"':""} ${f.req?"required":""}>`;
+    return `<label class="${f.full?"full":""}">${esc(f.l)}${f.req?" *":""}${inp}</label>`}).join("")}</div></div>
+  <div class="acts"><div>${onDelete?'<button class="btn del" data-del>Delete</button>':""}</div><div><button class="btn" data-x>Cancel</button><button class="btn pri" data-ok>Save</button></div></div>`;
+  d.querySelectorAll("[data-x]").forEach(b=>b.onclick=()=>d.close());
+  d.querySelector("[data-ok]").onclick=()=>{
+    const o={};
+    for(const f of fields){const el=d.querySelector(`[name="${f.k}"]`);let v=el.value.trim();
+      if(f.req&&!v){el.focus();toast(f.l+" is required");return}
+      if(f.t=="number"){if(v!==""&&+v<0){el.focus();toast(f.l+" can’t be negative");return}v=v===""?null:+v}
+      o[f.k]=v===""?null:v}
+    onSave(o);d.close();
+  };
+  if(onDelete)d.querySelector("[data-del]").onclick=()=>{if(confirm("Delete this record?")){onDelete();d.close()}};
+  d.showModal();
+}
+const opts=(t,k)=>db[t].map(x=>[x[k],x.name]);
+
+/* ---------- property forms ---------- */
+function propFields(){return[
+  {k:"client_id",l:"Client",t:"select",o:opts("client","client_id"),req:1,full:1},
+  {k:"location",l:"Location"},{k:"district_id",l:"District",t:"select",o:opts("district","district_id")},
+  {k:"land_size",l:"Land size (acres)",t:"number"},{k:"batch",l:"Batch"},
+  {k:"surveyor_id",l:"Surveyor",t:"select",o:opts("surveyor","surveyor_id")},{k:"start_date",l:"Start date",t:"date"},
+  {k:"total_fee",l:"Total fee",t:"number",req:1}]}
+function newProp(){
+  if(!db.client.length){toast("Add a client first");tab="clients";render();return}
+  form("New property",propFields(),{total_fee:0},v=>{addProperty(v);save();render();toast("Property added")});
+}
+function editProp(p){
+  form("Edit property",propFields(),p,v=>{Object.assign(p,v,{total_fee:v.total_fee||0,updated_at:now()});
+    db.stage.filter(s=>s.property_id==p.property_id&&!s.surveyor_id).forEach(s=>s.surveyor_id=p.surveyor_id);
+    recalc(p);save();render();openDetail(p.property_id)},
+    ()=>{db.properties=db.properties.filter(x=>x!=p);db.stage=db.stage.filter(x=>x.property_id!=p.property_id);db.payment=db.payment.filter(x=>x.property_id!=p.property_id);save();$("#dlg").close();render()});
+}
+
+/* ---------- property detail ---------- */
+function openDetail(id){
+  const p=by("properties","property_id",id);if(!p)return;
+  const d=$("#dlg"),st=db.stage.filter(s=>s.property_id==id),pay=db.payment.filter(x=>x.property_id==id).sort((a,b)=>a.created_at.localeCompare(b.created_at));
+  const paid=sumPaid(p);
+  d.innerHTML=`<div class="dh"><div><h2>${esc(nameOf("client","client_id",p.client_id))}</h2>
+   <div class="mute">${esc(p.location||"No location")}, ${esc(nameOf("district","district_id",p.district_id))} · ${p.land_size??"—"} acres · ${esc(p.batch||"no batch")} · surveyor ${esc(nameOf("surveyor","surveyor_id",p.surveyor_id))}</div></div>
+   <div style="display:flex;gap:6px"><button class="btn sm" id="ec">Edit client</button><button class="btn sm" id="ed">Edit property</button><button class="btn sm" id="cl">Close</button></div></div>
+  <div class="db">
+   <div class="sec"><div class="money"><div><b>${fmt(p.total_fee)}</b><span>Total fee</span></div><div><b>${fmt(paid)}</b><span>Paid by client</span></div>
+    <div><b class="${p.total_fee>paid?"owe":""}">${fmt(Math.max(0,p.total_fee-paid))}</b><span>Balance due</span></div><div><b>${fmt(sumSurv(p))}</b><span>Paid to surveyor</span></div></div></div>
+   <div class="sec"><h3>Stages <button class="btn sm" id="as">Add stage</button></h3>
+    ${st.map(s=>`<div class="stg"><span class="dot ${s.stage_id==p.current_stage_id?"on":""}"></span>
+     <span class="nm">${esc(s.name)} <span class="mute">· ${s.standard_days} standard days</span></span>
+     ${s.stage_id==p.current_stage_id?'<span class="tag done">Current</span>':`<button class="btn sm" data-cur="${s.stage_id}">Set current</button>`}
+     <button class="btn sm" data-es="${s.stage_id}">Edit</button></div>`).join("")||'<div class="empty">No stages yet. Add the first one.</div>'}</div>
+   <div class="sec"><h3>Payments <button class="btn sm" id="ap">Record payment</button></h3>
+    ${pay.length?`<div class="tw"><table style="min-width:520px"><thead><tr><th>Date</th><th class="n">Deposit</th><th class="n">Balance</th><th class="n">To surveyor</th><th class="n">Surveyor owed</th><th>Note</th><th></th></tr></thead><tbody>
+    ${pay.map(x=>`<tr><td>${x.created_at.slice(0,10)}</td><td class="n">${fmt(x.deposit)}</td><td class="n">${fmt(x.balance)}</td><td class="n">${fmt(x.payment_to_surveyor)}</td><td class="n">${fmt(x.surveyors_balance)}</td><td>${esc(x.note)}</td><td><button class="btn sm del" data-dp="${x.payment_id}">Delete</button></td></tr>`).join("")}</tbody></table></div>`:'<div class="empty">No payments recorded.</div>'}</div>
+  </div>`;
+  $("#cl").onclick=()=>d.close();$("#ed").onclick=()=>editProp(p);
+  $("#ec").onclick=()=>{const c=by("client","client_id",p.client_id);if(c)form("Edit client",[{k:"name",l:"Name",req:1,full:1},{k:"phone_no",l:"Phone number",full:1}],c,v=>{Object.assign(c,v,{updated_at:now()});save();render();openDetail(id);toast("Client updated")})};
+  d.querySelectorAll("[data-cur]").forEach(b=>b.onclick=()=>{p.current_stage_id=b.dataset.cur;p.updated_at=now();save();render();openDetail(id)});
+  const sf=[{k:"name",l:"Stage name",req:1,full:1},{k:"standard_days",l:"Standard days",t:"number",req:1}];
+  $("#as").onclick=()=>form("Add stage",sf,{standard_days:0},v=>{db.stage.push({stage_id:uid(),property_id:id,surveyor_id:p.surveyor_id,name:v.name,standard_days:Math.round(v.standard_days||0),created_at:now(),updated_at:null});save();openDetail(id)});
+  d.querySelectorAll("[data-es]").forEach(b=>b.onclick=()=>{const s=by("stage","stage_id",b.dataset.es);
+    form("Edit stage",sf,s,v=>{Object.assign(s,v,{standard_days:Math.round(v.standard_days||0),updated_at:now()});save();openDetail(id)},
+    ()=>{db.stage=db.stage.filter(x=>x!=s);if(p.current_stage_id==s.stage_id)p.current_stage_id=null;save();render();openDetail(id)})});
+  $("#ap").onclick=()=>form("Record payment",[{k:"deposit",l:"Deposit from client",t:"number",req:1},{k:"payment_to_surveyor",l:"Payment to surveyor",t:"number"},{k:"surveyors_balance",l:"Surveyor’s balance remaining",t:"number"},{k:"note",l:"Note",t:"textarea",full:1}],{deposit:0},v=>{addPayment(p,v);save();render();openDetail(id);toast("Payment recorded")});
+  d.querySelectorAll("[data-dp]").forEach(b=>b.onclick=()=>{if(confirm("Delete this payment?")){db.payment=db.payment.filter(x=>x.payment_id!=b.dataset.dp);recalc(p);save();render();openDetail(id)}});
+  if(!d.open)d.showModal();
+}
+
+/* ---------- views ---------- */
+const TABS=[["register","Register"],["clients","Clients"],["surveyors","Surveyors"],["districts","Districts"]];
+function render(){
+  $("#tabs").innerHTML=TABS.map(([k,l])=>`<button role="tab" aria-selected="${k==tab}" data-t="${k}">${l}</button>`).join("");
+  $("#tabs").querySelectorAll("button").forEach(b=>b.onclick=()=>{tab=b.dataset.t;render()});
+  const P=db.properties,paid=P.reduce((a,p)=>a+sumPaid(p),0),fee=P.reduce((a,p)=>a+p.total_fee,0);
+  $("#stats").innerHTML=`<div><b>${P.length}</b><span>Properties</span></div><div><b>${fmt(fee)}</b><span>Total fees</span></div><div><b>${fmt(paid)}</b><span>Collected</span></div><div><b class="owe">${fmt(Math.max(0,fee-paid))}</b><span>Outstanding</span></div>`;
+  ({register:viewRegister,clients:viewClients,surveyors:viewSurveyors,districts:viewDistricts})[tab]();
+}
+function viewRegister(){
+  const v=$("#view");
+  const stNames=[...new Set(db.stage.map(s=>s.name))];
+  v.innerHTML=`<div class="bar"><input id="q" type="search" placeholder="Search client, location or batch" value="${esc(filt.q)}" aria-label="Search">
+   <select id="fd" aria-label="District"><option value="">All districts</option>${db.district.map(x=>`<option value="${x.district_id}" ${filt.d==x.district_id?"selected":""}>${esc(x.name)}</option>`).join("")}</select>
+   <select id="fs" aria-label="Surveyor"><option value="">All surveyors</option>${db.surveyor.map(x=>`<option value="${x.surveyor_id}" ${filt.s==x.surveyor_id?"selected":""}>${esc(x.name)}</option>`).join("")}</select>
+   <select id="ft" aria-label="Stage"><option value="">All stages</option>${stNames.map(n=>`<option ${filt.st==n?"selected":""}>${esc(n)}</option>`).join("")}</select>
+   <button class="btn pri" id="np">New property</button></div><div id="tbl"></div>`;
+  const draw=()=>{
+    const q=filt.q.toLowerCase();
+    const rows=db.properties.filter(p=>(!filt.d||p.district_id==filt.d)&&(!filt.s||p.surveyor_id==filt.s)&&(!filt.st||by("stage","stage_id",p.current_stage_id)?.name==filt.st)&&(!q||[nameOf("client","client_id",p.client_id),p.location,p.batch].join(" ").toLowerCase().includes(q)));
+    $("#tbl").innerHTML=rows.length?`<div class="tw"><table><thead><tr><th>Client</th><th>Location</th><th>Batch</th><th class="n">Acres</th><th>Surveyor</th><th>Current stage</th><th class="n">Fee</th><th class="n">Balance</th></tr></thead><tbody>
+    ${rows.map(p=>{const s=by("stage","stage_id",p.current_stage_id),bal=Math.max(0,p.total_fee-sumPaid(p)),last=s&&db.stage.filter(x=>x.property_id==p.property_id).slice(-1)[0]==s;
+     return `<tr class="row" tabindex="0" data-id="${p.property_id}"><td>${esc(nameOf("client","client_id",p.client_id))}<div class="mute" style="font-size:13px">${esc(by("client","client_id",p.client_id)?.phone_no||"")}</div></td>
+     <td>${esc(p.location)}<div class="mute" style="font-size:13px">${esc(nameOf("district","district_id",p.district_id))}</div></td><td>${esc(p.batch)}</td><td class="n">${p.land_size??"—"}</td>
+     <td>${esc(nameOf("surveyor","surveyor_id",p.surveyor_id))}</td><td>${s?`<span class="tag ${last?"done":""}">${esc(s.name)}</span><div class="mute" style="font-size:13px">${s.standard_days} std days</div>`:'<span class="mute">Not set</span>'}</td>
+     <td class="n">${fmt(p.total_fee)}</td><td class="n ${bal?"owe":""}">${fmt(bal)}</td></tr>`}).join("")}</tbody></table></div>`:`<div class="tw"><div class="empty">${db.properties.length?"No properties match these filters. Clear a filter to see more.":"No properties yet. Select New property to register the first one."}</div></div>`;
+    $("#tbl").querySelectorAll("tr.row").forEach(r=>{r.onclick=()=>openDetail(r.dataset.id);r.onkeydown=e=>{if(e.key=="Enter")openDetail(r.dataset.id)}});
+  };
+  $("#q").oninput=e=>{filt.q=e.target.value;draw()};
+  $("#fd").onchange=e=>{filt.d=e.target.value;draw()};$("#fs").onchange=e=>{filt.s=e.target.value;draw()};$("#ft").onchange=e=>{filt.st=e.target.value;draw()};
+  $("#np").onclick=newProp;draw();
+}
+function simpleList(title,table,key,cols,fields,count,extra){
+  const rows=db[table];
+  $("#view").innerHTML=`<div class="bar" style="justify-content:space-between"><h2>${title}</h2><button class="btn pri" id="add">Add ${table=="client"?"client":table=="surveyor"?"surveyor":"district"}</button></div>
+  <div class="tw">${rows.length?`<table style="min-width:420px"><thead><tr>${cols.map(c=>`<th>${c[1]}</th>`).join("")}<th class="n">Properties</th><th></th></tr></thead><tbody>
+  ${rows.map(r=>`<tr>${cols.map(c=>`<td>${esc(r[c[0]]||"—")}</td>`).join("")}<td class="n">${db.properties.filter(p=>p[key]==r[key]).length}</td><td class="n"><button class="btn sm" data-e="${r[key]}">Edit</button></td></tr>`).join("")}</tbody></table>`:`<div class="empty">Nothing here yet. Add the first record.</div>`}</div>`;
+  $("#add").onclick=()=>form("Add "+table,fields,{},v=>{db[table].push({[key]:uid(),...v,created_at:now(),updated_at:null});save();render()});
+  $("#view").querySelectorAll("[data-e]").forEach(b=>b.onclick=()=>{const r=by(table,key,b.dataset.e);
+    form("Edit "+table,fields,r,v=>{Object.assign(r,v,{updated_at:now()});save();render()},()=>{
+      const n=db.properties.filter(p=>p[key]==r[key]).length;
+      if(table=="client"&&n){toast("This client has properties and can’t be deleted");return}
+      db.properties.forEach(p=>{if(p[key]==r[key])p[key]=null});db.stage.forEach(s=>{if(s[key]==r[key])s[key]=null});db.payment.forEach(s=>{if(s[key]==r[key])s[key]=null});
+      db[table]=db[table].filter(x=>x!=r);save();render()})});
+}
+const viewClients=()=>simpleList("Clients","client","client_id",[["name","Name"],["phone_no","Phone"]],[{k:"name",l:"Name",req:1,full:1},{k:"phone_no",l:"Phone number",full:1}]);
+const viewSurveyors=()=>simpleList("Surveyors","surveyor","surveyor_id",[["name","Name"]],[{k:"name",l:"Name",req:1,full:1}]);
+const viewDistricts=()=>simpleList("Districts","district","district_id",[["name","Name"]],[{k:"name",l:"District name",req:1,full:1}]);
+
+/* ---------- export ---------- */
+async function download(name,text,type){
+  try{if(window.claude){const dl=await claude.use("downloads");if(dl){await dl.save({filename:name,data:text});return}}}catch(e){if(e&&e.code=="declined")return}
+  try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click()}catch(e){}
+  navigator.clipboard?.writeText(text).then(()=>toast("Copied to clipboard"),()=>{})}
+$("#exCsv").onclick=()=>{
+  const h=["client","phone","location","district","batch","land_size","surveyor","current_stage","start_date","total_fee","paid","balance"];
+  const r=db.properties.map(p=>{const c=by("client","client_id",p.client_id);return[c?.name,c?.phone_no,p.location,nameOf("district","district_id",p.district_id),p.batch,p.land_size,nameOf("surveyor","surveyor_id",p.surveyor_id),by("stage","stage_id",p.current_stage_id)?.name,p.start_date,p.total_fee,sumPaid(p),Math.max(0,p.total_fee-sumPaid(p))]});
+  download("title-register.csv",[h,...r].map(a=>a.map(x=>`"${String(x??"").replace(/"/g,'""')}"`).join(",")).join("\n"),"text/csv");
+};
+$("#exSql").onclick=()=>{
+  const q=v=>v==null||v===""?"NULL":typeof v=="number"?v:"'"+String(v).replace(/'/g,"''")+"'";
+  const out=[];
+  const cols={client:["client_id","name","phone_no"],district:["district_id","name"],surveyor:["surveyor_id","name"],properties:["property_id","client_id","land_size","payment","surveyor_id","total_fee","start_date","batch","location","district_id"],stage:["stage_id","property_id","surveyor_id","name","standard_days"],payment:["payment_id","total_fee","deposit","balance","payment_to_surveyor","surveyors_balance","property_id","surveyor_id","note"]};
+  for(const t in cols)db[t].forEach(r=>out.push(`INSERT INTO ${t} (${cols[t].join(", ")}) VALUES (${cols[t].map(c=>q(r[c])).join(", ")});`));
+  db.properties.filter(p=>p.current_stage_id).forEach(p=>out.push(`UPDATE properties SET current_stage_id = ${q(p.current_stage_id)} WHERE property_id = ${q(p.property_id)};`));
+  download("title-register-data.sql.txt",out.join("\n"),"text/plain");
+};
+
+$("#exJson").onclick=()=>download("title-register-backup.json",JSON.stringify(db,null,1),"application/json");
+$("#imJson").onclick=()=>$("#fi").click();
+$("#fi").onchange=async e=>{const f=e.target.files[0];if(!f)return;
+  try{const j=JSON.parse(await f.text());if(!j.properties||!j.client)throw 0;if(!confirm("Replace all current records with this backup?"))return;db=j;save();render();toast("Backup restored")}catch(x){toast("That file isn’t a valid backup")}e.target.value=""};
+
+db=seed();
+$("#lf").onsubmit=async e=>{e.preventDefault();if(!sb){return}$("#lmsg").textContent="Signing in…";
+  const{error}=await sb.auth.signInWithPassword({email:$("#em").value,password:$("#pw").value});
+  if(error){$("#lmsg").textContent=error.message;return}$("#lmsg").textContent="";enter()};
+$("#out").onclick=async()=>{try{await sb?.auth.signOut()}catch(e){}location.reload()};
+start();
+</script>
+</body>
+</html>
