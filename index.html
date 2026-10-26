@@ -113,7 +113,7 @@ let db,tab="register",filt={q:"",d:"",s:"",st:""};
 
 function seed(){db={client:[],district:[],surveyor:[],properties:[],stage:[],payment:[]};return db}
 const SUPABASE_URL="https://ysdbjsmgyvkrmapyvvnz.supabase.co";
-const SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzZGJqc21neXZrcm1hcHl2dm56Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5OTg2ODgsImV4cCI6MjEwODU3NDY4OH0.oiy6uZn5NCtTFk4q0WBqN1w1Dk6K1kSsiYf7T5Q_i0w";
+const SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzZGJqc21neXZrcm1hcHl2dm56Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5OTg2ODgsImV4cCI6MjEwODU3NDY4OH0.oiy6uZn5NCtTFk4[...]";
 let sb=null,snap={},syncing=false,again=false;
 const ORDER=["client","district","surveyor","properties","stage","payment"];
 const PK={client:"client_id",district:"district_id",surveyor:"surveyor_id",properties:"property_id",stage:"stage_id",payment:"payment_id"};
@@ -279,8 +279,8 @@ function simpleList(title,table,key,cols,fields){
   const rows=db[table];
   const label = table=="client"?"client":table=="surveyor"?"surveyor":"district";
   $("#view").innerHTML=`<div class="bar" style="justify-content:space-between"><h2>${title}</h2><button class="btn pri" id="add">Add ${label}</button></div>
-  <div class="tw">${rows.length?`<table style="min-width:${Math.max(420, cols.length*180)}px"><thead><tr>${cols.map(c=>`<th>${c[1]}</th>`).join("")}<th class="n">Properties</th><th></th></tr></thead><tbody>
-  ${rows.map(r=>`<tr>${cols.map(c=>`<td>${esc(r[c[0]]||"—")}</td>`).join("")}<td class="n">${db.properties.filter(p=>p[key]==r[key]).length}</td><td class="n"><button class="btn sm" data-e="${r[key]}">Edit</button></td></tr>`).join("")}</tbody></table>`:'<div class="empty">No '+label+' records yet.</div>'}</div>`;
+  <div class="tw">${rows.length?`<table style="min-width:${Math.max(420, cols.length*180)}px"><thead><tr>${cols.map(c=>`<th>${c[1]}</th>`).join("")}<th></th></tr></thead><tbody>
+  ${rows.map(r=>`<tr>${cols.map(c=>`<td>${esc(r[c[0]]||"—")}</td>`).join("")}<td class="n"><button class="btn sm" data-e="${r[key]}">Edit</button></td></tr>`).join("")}</tbody></table>`:'<div class="empty">No '+label+' records yet.</div>'}</div>`;
   $("#add").onclick=()=>form("Add "+label,fields,{},v=>{db[table].push({[key]:uid(),...v,created_at:now(),updated_at:null});save();render()});
   $("#view").querySelectorAll("[data-e]").forEach(b=>b.onclick=()=>{const r=by(table,key,b.dataset.e);
     form("Edit "+label,fields,r,v=>{Object.assign(r,v,{updated_at:now()});save();render()},()=>{
@@ -290,7 +290,7 @@ function simpleList(title,table,key,cols,fields){
       db[table]=db[table].filter(x=>x!=r);save();render()})});
 }
 const viewClients=()=>simpleList("Clients","client","client_id",[["name","Name"],["phone_no","Phone"]],[{k:"name",l:"Name",req:1,full:1},{k:"phone_no",l:"Phone number",full:1}]);
-const viewSurveyors=()=>simpleList("Surveyors","surveyor","surveyor_id",[["name","Name"],["phone_no","Phone"],["nin","NIN"]],[{k:"name",l:"Name",req:1,full:1},{k:"phone_no",l:"Phone number",full:1},{k:"nin",l:"NIN",full:1}]);
+const viewSurveyors=()=>simpleList("Surveyors","surveyor","surveyor_id",[["surveyor_id","ID"],["name","Name"],["phone_no","Phone"],["nin","NIN"],["created_at","Created"],["updated_at","Updated"]],[{k:"name",l:"Name",req:1,full:1},{k:"phone_no",l:"Phone number",full:1},{k:"nin",l:"NIN",full:1}]);
 const viewDistricts=()=>simpleList("Districts","district","district_id",[["name","Name"]],[{k:"name",l:"District name",req:1,full:1}]);
 
 /* ---------- export ---------- */
