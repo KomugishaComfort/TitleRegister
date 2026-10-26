@@ -8,7 +8,7 @@
 <style>
 :root{--bg:#eef1ef;--panel:#fbfcfb;--ink:#1c2a31;--mute:#5d6d73;--line:#d3dad7;--acc:#1f6b5a;--acc-ink:#fff;--warn:#a8561a;--soft:#e2ebe7;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12191c;--panel:#192327;--ink:#e3ebe8;--mute:#93a5a9;--line:#2c3a3f;--acc:#59b89f;--acc-ink:#0d1a16;--warn:#e0a06a;--soft:#22322f}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12191c;--panel:#192327;--ink:#e3ebe8;--mute:#93a5a9;--line:#2c3a3f;--acc:#59b89f;--acc-ink:#0d1a16;--warn:#e0a06a;--soft:#22322f;color-scheme:dark}}
 :root[data-theme="dark"]{--bg:#12191c;--panel:#192327;--ink:#e3ebe8;--mute:#93a5a9;--line:#2c3a3f;--acc:#59b89f;--acc-ink:#0d1a16;--warn:#e0a06a;--soft:#22322f;color-scheme:dark}
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
@@ -66,7 +66,7 @@ dialog::backdrop{background:rgba(10,20,20,.5)}
 .money{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
 .money div{background:var(--bg);padding:8px 12px}.money b{display:block;font-size:18px}
 .money span{font-size:12px;color:var(--mute)}
-.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:4px;opacity:0;pointer-events:none;transition:opacity .2s ease}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:4px;opacity:0;pointer-events:none;transition:opacity .2s}
 .toast.show{opacity:1}
 @media(max-width:560px){.fg{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -103,7 +103,7 @@ dialog::backdrop{background:rgba(10,20,20,.5)}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
 const $=s=>document.querySelector(s);
-const esc=s=>String(s??"").replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const uid=()=>crypto.randomUUID?crypto.randomUUID():"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c=="x"?r:(r&3|8)).toString(16)});
 const fmt=n=>Number(n||0).toLocaleString();
 const now=()=>new Date().toISOString();
@@ -113,12 +113,12 @@ let db,tab="register",filt={q:"",d:"",s:"",st:""};
 
 function seed(){db={client:[],district:[],surveyor:[],properties:[],stage:[],payment:[]};return db}
 const SUPABASE_URL="https://ysdbjsmgyvkrmapyvvnz.supabase.co";
-const SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzZGJqc21neXZrcm1hcHl2dm56Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5OTg2ODgsImV4cCI6MjEwODU3NDY4OH0.oiy6uZn5NCtTFk4[...]";
+const SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzZGJqc21neXZrcm1hcHl2dm56Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5OTg2ODgsImV4cCI6MjEwODU3NDY4OH0.oiy6uZn5NCtTFk4P5n3xqVRvm6K_h5D17skZgd5fIC0";
 let sb=null,snap={},syncing=false,again=false;
 const ORDER=["client","district","surveyor","properties","stage","payment"];
 const PK={client:"client_id",district:"district_id",surveyor:"surveyor_id",properties:"property_id",stage:"stage_id",payment:"payment_id"};
 function setStatus(t){const s=$("#status");if(s)s.textContent=t}
-function takeSnap(){snap={};ORDER.forEach(t=>snap[t]=new Map(db[t].map(r=>[r[PK[t]],JSON.stringify(r)]))) }
+function takeSnap(){snap={};ORDER.forEach(t=>snap[t]=new Map(db[t].map(r=>[r[PK[t]],JSON.stringify(r)])))}
 async function fetchAll(t){let out=[],i=0;for(;;){const{data,error}=await sb.from(t).select("*").order("created_at").range(i,i+999);if(error)throw error;out=out.concat(data);if(data.length<1000)return out;i+=1000}}
 function save(){sync()}
 async function sync(){
@@ -152,7 +152,7 @@ async function start(){
   enter();
 }
 function addProperty(v){
-  const p={property_id:uid(),client_id:v.client_id,land_size:v.land_size??null,payment:0,surveyor_id:v.surveyor_id||null,current_stage_id:null,total_fee:+v.total_fee||0,start_date:v.start_date||null,location:v.location||null,batch:v.batch||null,created_at:now(),updated_at:null};
+  const p={property_id:uid(),client_id:v.client_id,land_size:v.land_size??null,payment:0,surveyor_id:v.surveyor_id||null,current_stage_id:null,total_fee:+v.total_fee||0,start_date:v.start_date||null,batch:v.batch||"",location:v.location||"",district_id:v.district_id||null,created_at:now(),updated_at:null};
   db.properties.push(p);
   TEMPLATE.forEach(([name,standard_days])=>db.stage.push({stage_id:uid(),property_id:p.property_id,surveyor_id:p.surveyor_id,name,standard_days,created_at:now(),updated_at:null}));
   p.current_stage_id=db.stage.find(x=>x.property_id==p.property_id).stage_id;
@@ -160,7 +160,7 @@ function addProperty(v){
 }
 function addPayment(p,v){
   const paid=sumPaid(p)+(+v.deposit||0);
-  db.payment.push({payment_id:uid(),property_id:p.property_id,total_fee:p.total_fee,deposit:+v.deposit||0,balance:Math.max(0,p.total_fee-paid),payment_to_surveyor:+v.payment_to_surveyor||0,surveyors_balance:+v.surveyors_balance||0,created_at:now(),updated_at:null});
+  db.payment.push({payment_id:uid(),total_fee:p.total_fee,deposit:+v.deposit||0,balance:Math.max(0,p.total_fee-paid),payment_to_surveyor:+v.payment_to_surveyor||0,surveyors_balance:+v.surveyors_balance||0,property_id:p.property_id,surveyor_id:p.surveyor_id,note:v.note||"",created_at:now(),updated_at:null});
   p.payment=paid;
 }
 const sumPaid=p=>db.payment.filter(x=>x.property_id==p.property_id).reduce((a,x)=>a+x.deposit,0);
@@ -213,7 +213,7 @@ function editProp(p){
   form("Edit property",propFields(),p,v=>{Object.assign(p,v,{total_fee:v.total_fee||0,updated_at:now()});
     db.stage.filter(s=>s.property_id==p.property_id&&!s.surveyor_id).forEach(s=>s.surveyor_id=p.surveyor_id);
     recalc(p);save();render();openDetail(p.property_id)},
-    ()=>{db.properties=db.properties.filter(x=>x!=p);db.stage=db.stage.filter(x=>x.property_id!=p.property_id);db.payment=db.payment.filter(x=>x.property_id!=p.property_id);save();$("#dlg").close();render();});
+    ()=>{db.properties=db.properties.filter(x=>x!=p);db.stage=db.stage.filter(x=>x.property_id!=p.property_id);db.payment=db.payment.filter(x=>x.property_id!=p.property_id);save();$("#dlg").close();render()});
 }
 
 /* ---------- property detail ---------- */
@@ -233,17 +233,18 @@ function openDetail(id){
      ${s.stage_id==p.current_stage_id?'<span class="tag done">Current</span>':`<button class="btn sm" data-cur="${s.stage_id}">Set current</button>`}
      <button class="btn sm" data-es="${s.stage_id}">Edit</button></div>`).join("")||'<div class="empty">No stages yet. Add the first one.</div>'}</div>
    <div class="sec"><h3>Payments <button class="btn sm" id="ap">Record payment</button></h3>
-    ${pay.length?`<div class="tw"><table style="min-width:520px"><thead><tr><th>Date</th><th class="n">Deposit</th><th class="n">Balance</th><th class="n">To surveyor</th><th class="n">Surveyor owed</th><th></th></tr></thead><tbody>${pay.map(x=>`<tr><td>${x.created_at.slice(0,10)}</td><td class="n">${fmt(x.deposit)}</td><td class="n">${fmt(x.balance)}</td><td class="n">${fmt(x.payment_to_surveyor)}</td><td class="n">${fmt(x.surveyors_balance)}</td><td class="n"><button class="btn sm" data-dp="${x.payment_id}">Delete</button></td></tr>`).join("")}</tbody></table></div>`:'<div class="empty">No payments recorded yet.</div>'}</div>
+    ${pay.length?`<div class="tw"><table style="min-width:520px"><thead><tr><th>Date</th><th class="n">Deposit</th><th class="n">Balance</th><th class="n">To surveyor</th><th class="n">Surveyor owed</th><th>Note</th><th></th></tr></thead><tbody>
+    ${pay.map(x=>`<tr><td>${x.created_at.slice(0,10)}</td><td class="n">${fmt(x.deposit)}</td><td class="n">${fmt(x.balance)}</td><td class="n">${fmt(x.payment_to_surveyor)}</td><td class="n">${fmt(x.surveyors_balance)}</td><td>${esc(x.note)}</td><td><button class="btn sm del" data-dp="${x.payment_id}">Delete</button></td></tr>`).join("")}</tbody></table></div>`:'<div class="empty">No payments recorded.</div>'}</div>
   </div>`;
   $("#cl").onclick=()=>d.close();$("#ed").onclick=()=>editProp(p);
-  $("#ec").onclick=()=>{const c=by("client","client_id",p.client_id);if(c)form("Edit client",[{k:"name",l:"Name",req:1,full:1},{k:"phone_no",l:"Phone number",full:1}],c,v=>{Object.assign(c,v,{updated_at:now()});save();render();openDetail(id)});};
+  $("#ec").onclick=()=>{const c=by("client","client_id",p.client_id);if(c)form("Edit client",[{k:"name",l:"Name",req:1,full:1},{k:"phone_no",l:"Phone number",full:1}],c,v=>{Object.assign(c,v,{updated_at:now()});save();render();openDetail(id);toast("Client updated")})};
   d.querySelectorAll("[data-cur]").forEach(b=>b.onclick=()=>{p.current_stage_id=b.dataset.cur;p.updated_at=now();save();render();openDetail(id)});
   const sf=[{k:"name",l:"Stage name",req:1,full:1},{k:"standard_days",l:"Standard days",t:"number",req:1}];
-  $("#as").onclick=()=>form("Add stage",sf,{standard_days:0},v=>{db.stage.push({stage_id:uid(),property_id:id,surveyor_id:p.surveyor_id,name:v.name,standard_days:Math.round(v.standard_days||0),created_at:now(),updated_at:null});save();render();openDetail(id)});
+  $("#as").onclick=()=>form("Add stage",sf,{standard_days:0},v=>{db.stage.push({stage_id:uid(),property_id:id,surveyor_id:p.surveyor_id,name:v.name,standard_days:Math.round(v.standard_days||0),created_at:now(),updated_at:null});save();openDetail(id)});
   d.querySelectorAll("[data-es]").forEach(b=>b.onclick=()=>{const s=by("stage","stage_id",b.dataset.es);
     form("Edit stage",sf,s,v=>{Object.assign(s,v,{standard_days:Math.round(v.standard_days||0),updated_at:now()});save();openDetail(id)},
-    ()=>{db.stage=db.stage.filter(x=>x!=s);if(p.current_stage_id==s.stage_id)p.current_stage_id=null;save();render();openDetail(id)});});
-  $("#ap").onclick=()=>form("Record payment",[{k:"deposit",l:"Deposit from client",t:"number",req:1},{k:"payment_to_surveyor",l:"Payment to surveyor",t:"number"},{k:"surveyors_balance",l:"Surveyor’s balance",t:"number"}],{deposit:0,payment_to_surveyor:0,surveyors_balance:0},v=>{const payment={payment_id:uid(),property_id:id,total_fee:p.total_fee,deposit:+v.deposit||0,balance:Math.max(0,p.total_fee-(sumPaid(p)+(+v.deposit||0))),payment_to_surveyor:+v.payment_to_surveyor||0,surveyors_balance:+v.surveyors_balance||0,created_at:now(),updated_at:null};db.payment.push(payment);recalc(p);save();render();openDetail(id)});
+    ()=>{db.stage=db.stage.filter(x=>x!=s);if(p.current_stage_id==s.stage_id)p.current_stage_id=null;save();render();openDetail(id)})});
+  $("#ap").onclick=()=>form("Record payment",[{k:"deposit",l:"Deposit from client",t:"number",req:1},{k:"payment_to_surveyor",l:"Payment to surveyor",t:"number"},{k:"surveyors_balance",l:"Surveyor’s balance remaining",t:"number"},{k:"note",l:"Note",t:"textarea",full:1}],{deposit:0},v=>{addPayment(p,v);save();render();openDetail(id);toast("Payment recorded")});
   d.querySelectorAll("[data-dp]").forEach(b=>b.onclick=()=>{if(confirm("Delete this payment?")){db.payment=db.payment.filter(x=>x.payment_id!=b.dataset.dp);recalc(p);save();render();openDetail(id)}});
   if(!d.open)d.showModal();
 }
@@ -254,7 +255,7 @@ function render(){
   $("#tabs").innerHTML=TABS.map(([k,l])=>`<button role="tab" aria-selected="${k==tab}" data-t="${k}">${l}</button>`).join("");
   $("#tabs").querySelectorAll("button").forEach(b=>b.onclick=()=>{tab=b.dataset.t;render()});
   const P=db.properties,paid=P.reduce((a,p)=>a+sumPaid(p),0),fee=P.reduce((a,p)=>a+p.total_fee,0);
-  $("#stats").innerHTML=`<div><b>${P.length}</b><span>Properties</span></div><div><b>${fmt(fee)}</b><span>Total fees</span></div><div><b>${fmt(paid)}</b><span>Collected</span></div><div><b class="owe">${fmt(P.reduce((a,p)=>a+Math.max(0,p.total_fee-sumPaid(p)),0))}</b><span>Outstanding</span></div>`;
+  $("#stats").innerHTML=`<div><b>${P.length}</b><span>Properties</span></div><div><b>${fmt(fee)}</b><span>Total fees</span></div><div><b>${fmt(paid)}</b><span>Collected</span></div><div><b class="owe">${fmt(Math.max(0,fee-paid))}</b><span>Outstanding</span></div>`;
   ({register:viewRegister,clients:viewClients,surveyors:viewSurveyors,districts:viewDistricts})[tab]();
 }
 function viewRegister(){
@@ -267,30 +268,36 @@ function viewRegister(){
    <button class="btn pri" id="np">New property</button></div><div id="tbl"></div>`;
   const draw=()=>{
     const q=filt.q.toLowerCase();
-    const rows=db.properties.filter(p=>(!filt.d||p.district_id==filt.d)&&(!filt.s||p.surveyor_id==filt.s)&&(!filt.st||by("stage","stage_id",p.current_stage_id)?.name==filt.st)&&(!q||[nameOf("client","client_id",p.client_id),p.location||"",p.batch||"",nameOf("district","district_id",p.district_id),nameOf("surveyor","surveyor_id",p.surveyor_id)].join(" ").toLowerCase().includes(q)));
-    $("#tbl").innerHTML=rows.length?`<div class="tw"><table><thead><tr><th>Client</th><th>Location</th><th>Batch</th><th class="n">Acres</th><th>Surveyor</th><th>Current stage</th><th class="n">Fee</th><th class="n">Balance</th></tr></thead><tbody>${rows.map(p=>{const s=by("stage","stage_id",p.current_stage_id),bal=Math.max(0,p.total_fee-sumPaid(p));return `<tr class="row" tabindex="0" data-id="${p.property_id}"><td>${esc(nameOf("client","client_id",p.client_id))}<div class="mute" style="font-size:13px">${esc(by("client","client_id",p.client_id)?.phone_no||"")}</div></td><td>${esc(p.location)}<div class="mute" style="font-size:13px">${esc(nameOf("district","district_id",p.district_id))}</div></td><td>${esc(p.batch)}</td><td class="n">${p.land_size??"—"}</td><td>${esc(nameOf("surveyor","surveyor_id",p.surveyor_id))}</td><td>${s?`<span class="tag ${db.stage.filter(x=>x.property_id==p.property_id).slice(-1)[0]==s?"done":""}">${esc(s.name)}</span><div class="mute" style="font-size:13px">${s.standard_days} std days</div>`:"—"}</td><td class="n">${fmt(p.total_fee)}</td><td class="n ${bal?"owe":""}">${fmt(bal)}</td></tr>`}).join("")}</tbody></table></div>`:`<div class="tw"><div class="empty">${db.properties.length?"No properties match your filters.":"No properties yet. Add the first one."}</div></div>`;
+    const rows=db.properties.filter(p=>(!filt.d||p.district_id==filt.d)&&(!filt.s||p.surveyor_id==filt.s)&&(!filt.st||by("stage","stage_id",p.current_stage_id)?.name==filt.st)&&(!q||[nameOf("client","client_id",p.client_id),p.location,p.batch].join(" ").toLowerCase().includes(q)));
+    $("#tbl").innerHTML=rows.length?`<div class="tw"><table><thead><tr><th>Client</th><th>Location</th><th>Batch</th><th class="n">Acres</th><th>Surveyor</th><th>Current stage</th><th class="n">Fee</th><th class="n">Balance</th></tr></thead><tbody>
+    ${rows.map(p=>{const s=by("stage","stage_id",p.current_stage_id),bal=Math.max(0,p.total_fee-sumPaid(p)),last=s&&db.stage.filter(x=>x.property_id==p.property_id).slice(-1)[0]==s;
+     return `<tr class="row" tabindex="0" data-id="${p.property_id}"><td>${esc(nameOf("client","client_id",p.client_id))}<div class="mute" style="font-size:13px">${esc(by("client","client_id",p.client_id)?.phone_no||"")}</div></td>
+     <td>${esc(p.location)}<div class="mute" style="font-size:13px">${esc(nameOf("district","district_id",p.district_id))}</div></td><td>${esc(p.batch)}</td><td class="n">${p.land_size??"—"}</td>
+     <td>${esc(nameOf("surveyor","surveyor_id",p.surveyor_id))}<div class="mute" style="font-size:13px">${esc(by("surveyor","surveyor_id",p.surveyor_id)?.phone_no||"")}</div></td><td>${s?`<span class="tag ${last?"done":""}">${esc(s.name)}</span><div class="mute" style="font-size:13px">${s.standard_days} std days</div>`:'<span class="mute">Not set</span>'}</td>
+     <td class="n">${fmt(p.total_fee)}</td><td class="n ${bal?"owe":""}">${fmt(bal)}</td></tr>`}).join("")}</tbody></table></div>`:`<div class="tw"><div class="empty">${db.properties.length?"No properties match these filters. Clear a filter to see more.":"No properties yet. Select New property to register the first one."}</div></div>`;
     $("#tbl").querySelectorAll("tr.row").forEach(r=>{r.onclick=()=>openDetail(r.dataset.id);r.onkeydown=e=>{if(e.key=="Enter")openDetail(r.dataset.id)}});
   };
   $("#q").oninput=e=>{filt.q=e.target.value;draw()};
   $("#fd").onchange=e=>{filt.d=e.target.value;draw()};$("#fs").onchange=e=>{filt.s=e.target.value;draw()};$("#ft").onchange=e=>{filt.st=e.target.value;draw()};
   $("#np").onclick=newProp;draw();
 }
-function simpleList(title,table,key,cols,fields){
+function simpleList(title,table,key,cols,fields,count,extra){
   const rows=db[table];
-  const label = table=="client"?"client":table=="surveyor"?"surveyor":"district";
-  $("#view").innerHTML=`<div class="bar" style="justify-content:space-between"><h2>${title}</h2><button class="btn pri" id="add">Add ${label}</button></div>
-  <div class="tw">${rows.length?`<table style="min-width:${Math.max(420, cols.length*180)}px"><thead><tr>${cols.map(c=>`<th>${c[1]}</th>`).join("")}<th></th></tr></thead><tbody>
-  ${rows.map(r=>`<tr>${cols.map(c=>`<td>${esc(r[c[0]]||"—")}</td>`).join("")}<td class="n"><button class="btn sm" data-e="${r[key]}">Edit</button></td></tr>`).join("")}</tbody></table>`:'<div class="empty">No '+label+' records yet.</div>'}</div>`;
-  $("#add").onclick=()=>form("Add "+label,fields,{},v=>{db[table].push({[key]:uid(),...v,created_at:now(),updated_at:null});save();render()});
+  $("#view").innerHTML=`<div class="bar" style="justify-content:space-between"><h2>${title}</h2><button class="btn pri" id="add">Add ${table=="client"?"client":table=="surveyor"?"surveyor":"district"}</button></div>
+  <div class="tw">${rows.length?`<table style="min-width:420px"><thead><tr>${cols.map(c=>`<th>${c[1]}</th>`).join("")}<th class="n">Properties</th><th></th></tr></thead><tbody>
+  ${rows.map(r=>`<tr>${cols.map(c=>`<td>${esc(r[c[0]]||"—")}</td>`).join("")}<td class="n">${db.properties.filter(p=>p[key]==r[key]).length}</td><td class="n"><button class="btn sm" data-e="${r[key]}">Edit</button></td></tr>`).join("")}</tbody></table>`:`<div class="empty">Nothing here yet. Add the first record.</div>`}</div>`;
+  $("#add").onclick=()=>form("Add "+table,fields,{},v=>{db[table].push({[key]:uid(),...v,created_at:now(),updated_at:null});save();render()});
   $("#view").querySelectorAll("[data-e]").forEach(b=>b.onclick=()=>{const r=by(table,key,b.dataset.e);
-    form("Edit "+label,fields,r,v=>{Object.assign(r,v,{updated_at:now()});save();render()},()=>{
+    form("Edit "+table,fields,r,v=>{Object.assign(r,v,{updated_at:now()});save();render()},()=>{
       const n=db.properties.filter(p=>p[key]==r[key]).length;
       if(table=="client"&&n){toast("This client has properties and can’t be deleted");return}
       db.properties.forEach(p=>{if(p[key]==r[key])p[key]=null});db.stage.forEach(s=>{if(s[key]==r[key])s[key]=null});db.payment.forEach(s=>{if(s[key]==r[key])s[key]=null});
       db[table]=db[table].filter(x=>x!=r);save();render()})});
 }
 const viewClients=()=>simpleList("Clients","client","client_id",[["name","Name"],["phone_no","Phone"]],[{k:"name",l:"Name",req:1,full:1},{k:"phone_no",l:"Phone number",full:1}]);
-const viewSurveyors=()=>simpleList("Surveyors","surveyor","surveyor_id",[["surveyor_id","ID"],["name","Name"],["phone_no","Phone"],["nin","NIN"],["created_at","Created"],["updated_at","Updated"]],[{k:"name",l:"Name",req:1,full:1},{k:"phone_no",l:"Phone number",full:1},{k:"nin",l:"NIN",full:1}]);
+const viewSurveyors=()=>simpleList("Surveyors","surveyor","surveyor_id",
+  [["name","Name"],["phone_no","Phone"],["nin","NIN"]],
+  [{k:"name",l:"Name",req:1,full:1},{k:"phone_no",l:"Phone number"},{k:"nin",l:"NIN"}]);
 const viewDistricts=()=>simpleList("Districts","district","district_id",[["name","Name"]],[{k:"name",l:"District name",req:1,full:1}]);
 
 /* ---------- export ---------- */
@@ -299,14 +306,14 @@ async function download(name,text,type){
   try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click()}catch(e){}
   navigator.clipboard?.writeText(text).then(()=>toast("Copied to clipboard"),()=>{})}
 $("#exCsv").onclick=()=>{
-  const h=["client","phone","location","district","batch","land_size","surveyor","current_stage","start_date","total_fee","paid","balance"];
-  const r=db.properties.map(p=>{const c=by("client","client_id",p.client_id);return[c?.name,c?.phone_no,p.location,nameOf("district","district_id",p.district_id),p.batch,p.land_size,nameOf("surveyor","surveyor_id",p.surveyor_id),by("stage","stage_id",p.current_stage_id)?.name||"",p.start_date||"",p.total_fee,sumPaid(p),Math.max(0,p.total_fee-sumPaid(p))]});
+  const h=["client","phone","location","district","batch","land_size","surveyor","surveyor_phone","surveyor_nin","current_stage","start_date","total_fee","paid","balance"];
+  const r=db.properties.map(p=>{const c=by("client","client_id",p.client_id),s=by("surveyor","surveyor_id",p.surveyor_id);return[c?.name,c?.phone_no,p.location,nameOf("district","district_id",p.district_id),p.batch,p.land_size,s?.name,s?.phone_no,s?.nin,by("stage","stage_id",p.current_stage_id)?.name,p.start_date,p.total_fee,sumPaid(p),Math.max(0,p.total_fee-sumPaid(p))]});
   download("title-register.csv",[h,...r].map(a=>a.map(x=>`"${String(x??"").replace(/"/g,'""')}"`).join(",")).join("\n"),"text/csv");
 };
 $("#exSql").onclick=()=>{
   const q=v=>v==null||v===""?"NULL":typeof v=="number"?v:"'"+String(v).replace(/'/g,"''")+"'";
   const out=[];
-  const cols={client:["client_id","name","phone_no"],district:["district_id","name"],surveyor:["surveyor_id","name","phone_no","nin"],properties:["property_id","client_id","land_size","payment","surveyor_id","total_fee","location","district_id","batch","current_stage_id","start_date"],stage:["stage_id","property_id","surveyor_id","name","standard_days"],payment:["payment_id","property_id","total_fee","deposit","balance","payment_to_surveyor","surveyors_balance"]};
+  const cols={client:["client_id","name","phone_no"],district:["district_id","name"],surveyor:["surveyor_id","name","phone_no","nin"],properties:["property_id","client_id","land_size","payment","surveyor_id","total_fee","start_date","batch","location","district_id"],stage:["stage_id","property_id","surveyor_id","name","standard_days"],payment:["payment_id","total_fee","deposit","balance","payment_to_surveyor","surveyors_balance","property_id","surveyor_id","note"]};
   for(const t in cols)db[t].forEach(r=>out.push(`INSERT INTO ${t} (${cols[t].join(", ")}) VALUES (${cols[t].map(c=>q(r[c])).join(", ")});`));
   db.properties.filter(p=>p.current_stage_id).forEach(p=>out.push(`UPDATE properties SET current_stage_id = ${q(p.current_stage_id)} WHERE property_id = ${q(p.property_id)};`));
   download("title-register-data.sql.txt",out.join("\n"),"text/plain");
@@ -315,7 +322,7 @@ $("#exSql").onclick=()=>{
 $("#exJson").onclick=()=>download("title-register-backup.json",JSON.stringify(db,null,1),"application/json");
 $("#imJson").onclick=()=>$("#fi").click();
 $("#fi").onchange=async e=>{const f=e.target.files[0];if(!f)return;
-  try{const j=JSON.parse(await f.text());if(!j.properties||!j.client)throw 0;if(!confirm("Replace all current records with this backup?"))return;db=j;save();render();toast("Backup restored")}catch(x){toast("Backup file is invalid")}}
+  try{const j=JSON.parse(await f.text());if(!j.properties||!j.client)throw 0;if(!confirm("Replace all current records with this backup?"))return;db=j;save();render();toast("Backup restored")}catch(x){toast("That file isn’t a valid backup")}e.target.value=""};
 
 db=seed();
 $("#lf").onsubmit=async e=>{e.preventDefault();if(!sb){return}$("#lmsg").textContent="Signing in…";
