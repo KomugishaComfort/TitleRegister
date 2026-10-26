@@ -89,7 +89,7 @@ dialog::backdrop{background:rgba(10,20,20,.5)}
     <button class="btn" id="exJson">Backup</button><button class="btn" id="imJson">Restore</button><input type="file" id="fi" accept=".json,.txt,application/json" hidden>
     <button class="btn" id="exCsv">Export CSV</button>
     <button class="btn" id="exSql">Export SQL</button>
-    <button class="btn" id="out">Sign out</button>
+    
   </div>
 </header>
 <div class="stats" id="stats"></div>
@@ -149,8 +149,7 @@ async function enter(){
 async function start(){
   if(SUPABASE_URL.startsWith("PASTE")||typeof supabase=="undefined"){$("#login").hidden=false;$("#lmsg").textContent="Add your Supabase URL and key at the top of the script, and check your internet connection.";return}
   sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-  const{data}=await sb.auth.getSession();
-  if(data.session)enter();else $("#login").hidden=false;
+  enter();
 }
 function addProperty(v){
   const p={property_id:uid(),client_id:v.client_id,land_size:v.land_size??null,payment:0,surveyor_id:v.surveyor_id||null,current_stage_id:null,total_fee:+v.total_fee||0,start_date:v.start_date||null,batch:v.batch||"",location:v.location||"",district_id:v.district_id||null,created_at:now(),updated_at:null};
@@ -327,7 +326,6 @@ db=seed();
 $("#lf").onsubmit=async e=>{e.preventDefault();if(!sb){return}$("#lmsg").textContent="Signing in…";
   const{error}=await sb.auth.signInWithPassword({email:$("#em").value,password:$("#pw").value});
   if(error){$("#lmsg").textContent=error.message;return}$("#lmsg").textContent="";enter()};
-$("#out").onclick=async()=>{try{await sb?.auth.signOut()}catch(e){}location.reload()};
 start();
 </script>
 </body>
